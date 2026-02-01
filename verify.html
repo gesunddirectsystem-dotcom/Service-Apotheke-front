@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konto aktivieren – Apothekenservice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f5f9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        .box {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #1a5fb4;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        #displayEmail {
+            color: #1a5fb4;
+            display: block;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 8px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #26a269;
+            box-shadow: 0 0 0 2px rgba(38, 162, 105, 0.2);
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #26a269;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .resend-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .resend-link a {
+            color: #1a5fb4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(38, 162, 105, 0.4); }
+            70% { box-shadow: 0 0 0 5px rgba(38, 162, 105, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(38, 162, 105, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>E-Mail bestätigen</h2>
+    <p>Bitte geben Sie den Code ein, der an folgende E-Mail gesendet wurde:</p>
+    <b id="displayEmail"></b>
+
+    <input type="text" id="code" placeholder="000000" maxlength="10" autocomplete="off" autofocus>
+
+    <div id="error" class="error"></div>
+
+    <button class="btn" onclick="verify()">Konto bestätigen</button>
+
+    <div class="resend-link">
+        Code nicht erhalten?
+        <a href="#" onclick="resendCode()">Code erneut senden</a>
+    </div>
+</div>
+
+<script>
+    const email = localStorage.getItem('regEmail');
+    const role = localStorage.getItem('regRole');
+
+    if (!email) {
+        alert("Keine registrierte E-Mail gefunden");
+        window.location.href = "index.html";
+    }
+
+    document.getElementById('displayEmail').innerText = email;
+
+    document.getElementById('code').addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById('code').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') verify();
+    });
+
+    async function verify() {
+        const code = document.getElementById('code').value;
+        const btn = document.querySelector('.btn');
+        const errorDiv = document.getElementById('error');
+
+        if (!code) {
+            errorDiv.innerText = "Bitte geben Sie den Code ein";
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        if (code.length < 6) {
+            errorDiv.innerText = "Der Code muss mindestens 6 Ziffern enthalten";
+            errorDiv.style.display = "block";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Überprüfung läuft...";
+        errorDiv.style.display = "none";
+
+        const endpoint = role === "pharmacist" ? "Pharmacist/verify" : "Pharmacy/verify";
+
+        try {
+            const response = await fetch(`https://sirvicesezz.runasp.net/api/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, code })
+            });
+
+            const result = await response.text();
+
+            if (response.ok) {
+                alert("Ihr Konto wurde erfolgreich aktiviert. Sie können sich jetzt anmelden.");
+                localStorage.removeItem('regEmail');
+                localStorage.removeItem('regRole');
+                window.location.href = "login.html";
+            } else {
+                errorDiv.innerText = result || "Ungültiger Code. Bitte versuchen Sie es erneut.";
+                errorDiv.style.display = "block";
+            }
+        } catch {
+            errorDiv.innerText = "Serververbindung fehlgeschlagen.";
+            errorDiv.style.display = "block";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Konto bestätigen";
+        }
+    }
+
+    async function resendCode() {
+        const errorDiv = document.getElementById('error');
+        const link = document.querySelector('.resend-link a');
+
+        link.innerText = "Wird gesendet...";
+        link.style.pointerEvents = "none";
+
+        const endpoint = role === "pharmacist"
+            ? "Pharmacist/resend-code"
+            : "Pharmacy/resend-code";
+
+        try {
+            const response = await fetch(`https://sirvicesezz.runasp.net/api/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                alert("Ein neuer Code wurde an Ihre E-Mail gesendet");
+            } else {
+                errorDiv.innerText = "Code konnte nicht erneut gesendet werden";
+                errorDiv.style.display = "block";
+            }
+        } catch {
+            errorDiv.innerText = "Serververbindung fehlgeschlagen";
+            errorDiv.style.display = "block";
+        } finally {
+            link.innerText = "Code erneut senden";
+            link.style.pointerEvents = "auto";
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apotheke Dashboard - ServiceApotheke</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #e8eaf6;
+            --secondary: #26a269;
+            --secondary-light: #e6f7ef;
+            --danger: #c01c28;
+            --danger-light: #fde8e8;
+            --warning: #f5a623;
+            --warning-light: #fef6e6;
+            --gray-light: #f8f9fa;
+            --gray-border: #e9ecef;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --mobile-breakpoint: 992px;
+            --tablet-breakpoint: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--gray-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--primary);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        /* Sidebar - Responsive */
+        .sidebar {
+            width: 300px;
+            background: var(--primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 25px 10px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .app-name {
+            font-size: 18px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item {
+            padding: 16px 20px;
+            margin: 8px 0;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            margin-right: 15px;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-left: auto;
+            min-width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            right: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Main Content - Responsive */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-border);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .welcome h1 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .welcome p {
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Stats Cards - Responsive Grid */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s;
+            min-width: 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .icon-blue { background: var(--primary); }
+        .icon-green { background: var(--secondary); }
+        .icon-orange { background: var(--warning); }
+        .icon-red { background: var(--danger); }
+
+        .stat-info h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            line-height: 1;
+        }
+
+        .stat-info p {
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
+        /* Sections */
+        .section {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--gray-border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Form Styles - Responsive */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            min-width: 0;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+            min-width: 0;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        /* Jobs Grid - Responsive */
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .job-card {
+            border: 1px solid var(--gray-border);
+            border-radius: var(--radius);
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .job-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(26, 35, 126, 0.15);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .job-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .job-date {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .job-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-size: 15px;
+            flex-wrap: wrap;
+        }
+
+        .detail-item i {
+            margin-right: 10px;
+            color: var(--primary);
+            width: 20px;
+            flex-shrink: 0;
+        }
+
+        .salary {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 15px 0;
+            line-height: 1;
+        }
+
+        .applicants-count {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: var(--radius);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #151b5c;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e8c55;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a51c28;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Applicants List */
+        .applicants-list {
+            margin-top: 20px;
+            border-top: 1px solid var(--gray-border);
+            padding-top: 20px;
+        }
+
+        .applicant-item {
+            background: var(--gray-light);
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .applicant-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .applicant-info h4 {
+            margin-bottom: 5px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .applicant-info p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .applicant-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .applicant-actions .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        /* Notifications */
+        .notification-item {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: background 0.3s;
+            flex-wrap: wrap;
+        }
+
+        .notification-item:hover {
+            background: var(--gray-light);
+        }
+
+        .notification-item.unread {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        .notification-message {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .notification-time {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-light);
+        }
+
+        .loading i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal Styles */
+        #profileModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Responsive Design - Tablet */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+                padding: 25px;
+            }
+            .stats-cards {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            .jobs-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        /* Responsive Design - Mobile Menu */
+        @media (max-width: 992px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 80px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            .welcome h1 {
+                font-size: 24px;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+
+            .stat-card {
+                padding: 20px;
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .stat-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .stat-info h3 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .section-header h2 {
+                font-size: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .jobs-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .job-card {
+                padding: 20px;
+            }
+
+            .job-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .applicant-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .applicant-actions {
+                flex-direction: column;
+            }
+
+            .notification-item {
+                padding: 15px;
+            }
+
+            .notification-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+
+        /* Responsive Design - Small Mobile */
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 15px;
+                padding-top: 70px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                flex-direction: row;
+                text-align: left;
+            }
+
+            .form-control {
+                padding: 12px 14px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .section-header h2 {
+                font-size: 18px;
+            }
+
+            .job-title {
+                font-size: 16px;
+            }
+
+            .salary {
+                font-size: 20px;
+            }
+
+            .mobile-menu-toggle {
+                top: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                max-height: calc(100vh - 20px);
+            }
+        }
+
+        /* Landscape Mode */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .sidebar {
+                overflow-y: auto;
+                padding-top: 20px;
+                padding-bottom: 80px;
+            }
+
+            .logout-btn {
+                bottom: 20px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .job-card {
+                padding: 15px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .mobile-menu-toggle, .btn, .action-buttons {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 0;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* High Contrast Mode Support */
+        @media (prefers-contrast: high) {
+            .btn-primary, .btn-success, .btn-danger {
+                border: 2px solid black;
+            }
+            
+            .nav-item.active {
+                border: 2px solid black;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Touch Device Optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .nav-item, .logout-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .form-control, select, input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .job-card:hover, .stat-card:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <div class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-clinic-medical"></i>
+            </div>
+            <a href="index.html"><div class="app-name">Apotheke Dashboard</div></a>
+        </div>
+
+        <div class="nav-item active" onclick="showSection('dashboard'); closeSidebarOnMobile();">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showSection('create-shift'); closeSidebarOnMobile();">
+            <i class="fas fa-plus-circle"></i>
+            <span>Neue Schicht erstellen</span>
+        </div>
+        <div class="nav-item" onclick="showSection('my-shifts'); closeSidebarOnMobile();">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Meine Schichten</span>
+        </div>
+        <div class="nav-item" onclick="showSection('applications'); closeSidebarOnMobile();">
+            <i class="fas fa-users"></i>
+            <span>Eingegangene Bewerbungen</span>
+            <span id="apps-badge" class="badge" style="display: none;">0</span>
+        </div>
+        <div class="nav-item" onclick="showSection('notifications'); closeSidebarOnMobile();">
+            <i class="fas fa-bell"></i>
+            <span>Benachrichtigungen</span>
+            <span id="notif-badge" class="badge" style="display: none;">0</span>
+        </div>
+        <div class="nav-item" onclick="showSection('profile'); closeSidebarOnMobile();">
+            <i class="fas fa-building"></i>
+            <span>Apotheken-Daten</span>
+        </div>
+        
+        <div class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Abmelden</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="welcome">
+                <h1 id="pharmacyName">Heil-Apotheke</h1>
+                <p id="currentDate">Dienstag, 27. Januar 2024</p>
+            </div>
+            <div class="user-info">
+                <div class="avatar" id="pharmacyAvatar">A</div>
+                <div>
+                    <h3 id="pharmacyNameSmall">Heil-Apotheke</h3>
+                    <p id="pharmacyLicense">Lizenznummer: 123456</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon icon-blue">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalShifts">0</h3>
+                    <p>Gesamtschichten</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-green">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="activeShifts">0</h3>
+                    <p>Aktive Schichten</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingApplications">0</h3>
+                    <p>Ausstehende Bewerbungen</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-red">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalApplicants">0</h3>
+                    <p>Gesamtbewerber</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="section-dashboard" class="section active">
+            <div class="section-header">
+                <h2><i class="fas fa-home"></i> Übersicht</h2>
+                <button class="btn btn-primary" onclick="refreshDashboard()">
+                    <i class="fas fa-sync-alt"></i> Aktualisieren
+                </button>
+            </div>
+            
+            <div id="recent-shifts">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
+
+        <!-- Create Shift Section -->
+        <div id="section-create-shift" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-plus-circle"></i> Neue Schicht erstellen</h2>
+            </div>
+            
+            <form id="createShiftForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Schichtdatum *</label>
+                        <input type="date" id="shiftDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gehalt (€) *</label>
+                        <input type="number" id="salary" class="form-control" min="1" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Startzeit *</label>
+                        <input type="time" id="startTime" class="form-control" value="09:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Endzeit *</label>
+                        <input type="time" id="endTime" class="form-control" value="17:00" required>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hasBreak" onchange="toggleBreakField()">
+                    <label for="hasBreak">Pause vorhanden</label>
+                </div>
+
+                <div id="breakFields" style="display: none; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Pausendauer (Minuten)</label>
+                        <input type="number" id="breakDuration" class="form-control" min="5" max="120" value="30">
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hasTransportationAllowance" onchange="toggleTransportationField()">
+                    <label for="hasTransportationAllowance">Fahrtkostenzuschuss</label>
+                </div>
+
+                <div id="transportationFields" style="display: none; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Fahrtkostenzuschuss Betrag (€)</label>
+                        <input type="number" id="transportationAmount" class="form-control" min="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">Zusätzliche Notizen</label>
+                    <textarea id="notes" class="form-control" placeholder="Zusätzliche Informationen zur Schicht..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-outline">
+                        <i class="fas fa-undo"></i> Zurücksetzen
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Schicht veröffentlichen
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- My Shifts Section -->
+        <div id="section-my-shifts" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-clipboard-list"></i> Meine Schichten</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="loadMyShifts()">
+                        <i class="fas fa-sync-alt"></i> Aktualisieren
+                    </button>
+                </div>
+            </div>
+            
+            <div class="jobs-grid" id="my-shifts-list">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
+
+        <!-- Applications Section -->
+        <div id="section-applications" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Eingegangene Bewerbungen</h2>
+                <button class="btn btn-outline" onclick="loadApplications()">
+                    <i class="fas fa-sync-alt"></i> Aktualisieren
+                </button>
+            </div>
+            
+            <div id="applications-list">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div id="section-notifications" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> Benachrichtigungen</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="markAllAsRead()">
+                        <i class="fas fa-check-double"></i> Alle als gelesen markieren
+                    </button>
+                    <button class="btn btn-outline" onclick="loadNotifications()">
+                        <i class="fas fa-sync-alt"></i> Aktualisieren
+                    </button>
+                </div>
+            </div>
+            
+            <div id="notifications-list">
+                <!-- Wird durch JavaScript gefüllt -->
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="section-profile" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-building"></i> Apotheken-Daten</h2>
+            </div>
+            
+            <form id="pharmacyProfileForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Apothekenname *</label>
+                        <input type="text" id="ph_name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefonnummer *</label>
+                        <input type="tel" id="ph_phone" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label class="form-label">Vollständige Adresse *</label>
+                        <input type="text" id="ph_address" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Land *</label>
+                        <input type="text" id="ph_country" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lizenznummer *</label>
+                        <input type="text" id="ph_license" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="loadPharmacyData()">
+                        <i class="fas fa-undo"></i> Zurücksetzen
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Änderungen speichern
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Token-Überprüfung beim Laden
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedToken = localStorage.getItem('userToken');
+            const savedId = localStorage.getItem('userId');
+            
+            if (!savedToken || !savedId) {
+                window.location.href = "login.html";
+            }
+            
+            // App initialisieren
+            initApp();
+        });
+
+        const API_URL = "https://sirvicesezz.runasp.net/api";
+        const pharmacyId = localStorage.getItem('userId');
+        const token = localStorage.getItem('userToken');
+
+        // Funktionen zur Steuerung der mobilen Seitenleiste
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        function closeSidebarOnMobile() {
+            if (window.innerWidth <= 992) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('active');
+            }
+        }
+async function loadApplicantsForPost(jobPostId) {
+    try {
+        const response = await fetch(`${API_URL}/JobApplication/jobpost/${jobPostId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load applicants');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error("Error loading applicants:", error);
+        return [];
+    }
+}
+        // Seitenleiste schließen bei Klick außerhalb
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 992 && 
+                !sidebar.contains(e.target) && 
+                !menuToggle.contains(e.target) && 
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Fenstergrößenänderung behandeln
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // App initialisieren
+        function initApp() {
+            if (!pharmacyId || !token) {
+                window.location.href = "login.html";
+                return;
+            }
+            
+            updateDate();
+            loadPharmacyData();
+            loadStats();
+            loadDashboardData();
+            showSection('dashboard');
+            
+            // Heutiges Datum als Mindestdatum für Schichten setzen
+            const today = new Date().toISOString().split('T')[0];
+            const shiftDateInput = document.getElementById('shiftDate');
+            if (shiftDateInput) {
+                shiftDateInput.min = today;
+            }
+        }
+
+        // Datum aktualisieren
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('de-DE', options);
+        }
+
+        // Apothekendaten laden
+        async function loadPharmacyData() {
+            try {
+                const response = await fetch(`${API_URL}/Pharmacy/${pharmacyId}/full-details`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Apothekendaten konnten nicht geladen werden');
+                }
+                
+                const pharmacy = await response.json();
+                
+                // Überschriften aktualisieren
+                document.getElementById('pharmacyName').textContent = pharmacy.pharmacyName;
+                document.getElementById('pharmacyNameSmall').textContent = pharmacy.pharmacyName;
+                document.getElementById('pharmacyLicense').textContent = `Lizenznummer: ${pharmacy.licenseNumber}`;
+                
+                // Avatar aktualisieren
+                const avatar = document.getElementById('pharmacyAvatar');
+                if (pharmacy.pharmacyName) {
+                    avatar.textContent = pharmacy.pharmacyName.charAt(0);
+                }
+                
+                // Felder im Abschnitt "Apotheken-Daten" ausfüllen
+                if(document.getElementById('ph_name')) {
+                    document.getElementById('ph_name').value = pharmacy.pharmacyName || '';
+                    document.getElementById('ph_phone').value = pharmacy.phone || '';
+                    document.getElementById('ph_address').value = pharmacy.address || '';
+                    document.getElementById('ph_country').value = pharmacy.country || '';
+                    document.getElementById('ph_license').value = pharmacy.licenseNumber || '';
+                }
+            } catch (error) { 
+                console.error("Fehler beim Laden der Apothekendaten:", error);
+                alert("Fehler beim Laden der Apothekendaten");
+            }
+        }
+
+      async function loadStats() {
+    try {
+        // جلب جميع الشيفتات
+        const postsResponse = await fetch(`${API_URL}/JobPost/pharmacy/${pharmacyId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!postsResponse.ok) {
+            throw new Error('Failed to load job posts');
+        }
+        
+        const posts = await postsResponse.json();
+        
+        const totalShifts = posts.length;
+        const activeShifts = posts.filter(post => post.status === "Active").length;
+        
+        // حساب المتقدمين من جميع الشيفتات
+        let totalApplications = 0;
+        let pendingApplications = 0;
+        let totalApplicants = new Set();
+        
+        for (const post of posts) {
+            const applicants = await loadApplicantsForPost(post.id);
+            totalApplications += applicants.length;
+            pendingApplications += applicants.filter(app => app.status === "Pending").length;
+            applicants.forEach(app => {
+                if (app.pharmacistId) totalApplicants.add(app.pharmacistId);
+            });
+        }
+        
+        document.getElementById('totalShifts').textContent = totalShifts;
+        document.getElementById('activeShifts').textContent = activeShifts;
+        document.getElementById('pendingApplications').textContent = pendingApplications;
+        document.getElementById('totalApplicants').textContent = totalApplicants.size;
+        
+        // تحديث البادج
+        const appsBadge = document.getElementById('apps-badge');
+        if (pendingApplications > 0) {
+            appsBadge.textContent = pendingApplications;
+            appsBadge.style.display = "inline-block";
+        } else {
+            appsBadge.style.display = "none";
+        }
+        
+    } catch (error) {
+        console.error("Fehler beim Laden der Statistiken:", error);
+    }
+}
+        // Neue Schicht erstellen
+        async function handleCreateShift(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird veröffentlicht...';
+            btn.disabled = true;
+            
+            try {
+                const salaryValue = parseFloat(document.getElementById('salary').value);
+                const breakMin = parseInt(document.getElementById('breakDuration').value) || 0;
+                const transAmount = parseFloat(document.getElementById('transportationAmount').value) || 0;
+
+                const data = {
+                    pharmacyId: pharmacyId,
+                    shiftDate: document.getElementById('shiftDate').value,
+                    startTime: document.getElementById('startTime').value,
+                    endTime: document.getElementById('endTime').value,
+                    hasBreak: document.getElementById('hasBreak').checked,
+                    breakDurationInMinutes: document.getElementById('hasBreak').checked ? breakMin : 0,
+                    salary: salaryValue,
+                    hasTransportationAllowance: document.getElementById('hasTransportationAllowance').checked,
+                    transportationAllowanceAmount: document.getElementById('hasTransportationAllowance').checked ? transAmount : 0,
+                    notes: document.getElementById('notes').value || ""
+                };
+                
+                const response = await fetch(`${API_URL}/JobPost`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert("Schicht erfolgreich veröffentlicht!");
+                    e.target.reset();
+                    document.getElementById('breakFields').style.display = 'none';
+                    document.getElementById('transportationFields').style.display = 'none';
+                    loadStats();
+                    loadMyShifts();
+                } else {
+                    const errorResult = await response.json();
+                    if (errorResult.errors && errorResult.errors.Salary) {
+                        alert("Fehler: Gehalt muss ein numerischer Wert zwischen 0.01 und 100.000 sein");
+                    } else {
+                        alert("Fehler bei den gesendeten Daten. Bitte überprüfen Sie alle erforderlichen Felder");
+                    }
+                }
+            } catch (error) {
+                console.error("Fehler beim Erstellen der Schicht:", error);
+                alert("Serververbindungsfehler");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+    async function loadMyShifts() {
+    const container = document.getElementById('my-shifts-list');
+    container.innerHTML = `
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Schichten werden geladen...</p>
+        </div>
+    `;
+
+    try {
+        const response = await fetch(`${API_URL}/JobPost/pharmacy/${pharmacyId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Schichten konnten nicht geladen werden');
+        }
+
+        const shifts = await response.json();
+        container.innerHTML = '';
+
+        const visibleShifts = shifts.filter(shift => shift.status !== 'Cancelled');
+
+        if (visibleShifts.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px; color: var(--text-light);">
+                    <i class="fas fa-calendar-times fa-3x"></i>
+                    <h3 style="margin-top:20px;">Keine aktiven Schichten</h3>
+                    <p>Sie können eine neue Schicht über den Button oben erstellen</p>
+                </div>
+            `;
+            return;
+        }
+
+        // جلب عدد المتقدمين لكل شيفت
+        for (const shift of visibleShifts) {
+            const applicants = await debugLoadApplicants(shift.id);
+            const applicantsCount = applicants.length;
+            
+            const shiftDate = new Date(shift.shiftDate).toLocaleDateString('de-DE');
+            const salary = shift.salary || 0;
+
+            const card = document.createElement('div');
+            card.className = 'job-card';
+
+            card.innerHTML = `
+                <div class="job-header">
+                    <div class="job-title">Apotheker-Schicht</div>
+                    <div class="job-date">${shiftDate}</div>
+                </div>
+
+                <div class="job-details">
+                    <div class="detail-item">
+                        <i class="far fa-clock"></i>
+                        <span>${shift.startTime} - ${shift.endTime}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Gehalt: ${salary}€</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Status: ${shift.status}</span>
+                    </div>
+                </div>
+
+                <div class="applicants-count" style="background: ${applicantsCount > 0 ? 'var(--secondary-light)' : 'var(--gray-light)'}; 
+                                                     color: ${applicantsCount > 0 ? 'var(--secondary)' : 'var(--text-light)'};">
+                    ${applicantsCount} Bewerber
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="viewShiftApplications('${shift.id}')">
+                        <i class="fas fa-eye"></i> Bewerber anzeigen
+                    </button>
+
+                    <button 
+                        class="btn btn-danger" 
+                        onclick="deleteShift('${shift.id}')"
+                        ${shift.status !== 'Active' ? 'disabled' : ''}
+                    >
+                        <i class="fas fa-trash"></i> Löschen
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        }
+
+    } catch (error) {
+        console.error('Fehler beim Laden der Schichten:', error);
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px; color: var(--danger);">
+                <i class="fas fa-exclamation-triangle fa-3x"></i>
+                <h3 style="margin-top:20px;">Fehler beim Laden der Schichten</h3>
+            </div>
+        `;
+    }
+}
+ async function loadApplications() {
+    const container = document.getElementById('applications-list');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Bewerbungen werden geladen...</p></div>';
+    
+    try {
+        // 1. جلب جميع شيفتات الصيدلية
+        const postsResponse = await fetch(`${API_URL}/JobPost/pharmacy/${pharmacyId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!postsResponse.ok) {
+            throw new Error('Failed to load job posts');
+        }
+        
+        const posts = await postsResponse.json();
+        
+        container.innerHTML = '';
+        let hasApplications = false;
+        
+        // 2. لكل شيفت، جلب المتقدمين من API الخاص
+        for (const post of posts) {
+            if (post.status === 'Cancelled') continue;
+            
+            // استخدام API المنفصل للمتقدمين
+            const applicants = await loadApplicantsForPost(post.id);
+            
+            if (applicants.length > 0) {
+                hasApplications = true;
+                
+                const postDate = new Date(post.shiftDate).toLocaleDateString('de-DE');
+                const postCard = document.createElement('div');
+                postCard.className = 'job-card';
+                postCard.style.marginBottom = '25px';
+                postCard.style.borderLeft = '5px solid var(--primary)';
+                
+                postCard.innerHTML = `
+                    <div style="background: var(--primary-light); padding: 10px 20px; margin: -25px -25px 20px -25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h4 style="color: var(--primary); margin: 0;">Schicht vom: ${postDate}</h4>
+                        <span style="font-weight: bold;">${post.salary}€</span>
+                    </div>
+                    <div class="applicants-list">
+                        ${applicants.map(app => {
+                            let statusText = "In Überprüfung";
+                            let statusClass = "status-pending";
+                            if (app.status === "Accepted") { statusText = "✅ Angenommen"; statusClass = "status-accepted"; }
+                            if (app.status === "Rejected") { statusText = "❌ Abgelehnt"; statusClass = "status-rejected"; }
+                            
+                            // جلب اسم الصيدلي إن كان متاحاً
+                            let applicantName = app.fullName || app.pharmacistName || 'Unbekannter Apotheker';
+                            let applicantPhone = app.phone || 'Keine Telefonnummer';
+
+                            return `
+                                <div class="applicant-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; flex-wrap: wrap; gap: 15px;">
+                                        <div class="applicant-info">
+                                            <h4 style="margin-bottom: 5px;">Apotheker: ${applicantName}</h4>
+                                            <p style="color: var(--text-light); font-size: 14px;"><i class="fas fa-phone"></i> ${applicantPhone}</p>
+                                            <p style="font-size: 13px; color: #888;">Beworben am: ${new Date(app.appliedAt).toLocaleString('de-DE')}</p>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div class="status-badge ${statusClass}" style="font-size: 13px; padding: 5px 12px; margin-bottom: 10px; background: ${statusClass === 'status-accepted' ? 'var(--secondary-light)' : statusClass === 'status-rejected' ? 'var(--danger-light)' : 'var(--warning-light)'}; color: ${statusClass === 'status-accepted' ? 'var(--secondary)' : statusClass === 'status-rejected' ? 'var(--danger)' : 'var(--warning)'}; border-radius: 20px;">
+                                                ${statusText}
+                                            </div>
+                                            
+                                            <!-- الزر الجديد لعرض الـ CV -->
+                                            ${app.cvPath ? `
+                                                <button class="btn btn-outline" onclick="viewCV('${app.cvPath.replace(/\\/g, '/')}')" style="padding: 5px 10px; font-size: 12px; display: block; width: 100%; margin-bottom: 5px;">
+                                                    <i class="fas fa-file-pdf"></i> CV anzeigen
+                                                </button>
+                                            ` : ''}
+                                            
+                                            ${app.pharmacistId ? `
+                                                <button class="btn btn-outline" onclick="viewPharmacistProfile('${app.pharmacistId}')" style="padding: 5px 10px; font-size: 12px; display: block; width: 100%;">
+                                                    <i class="fas fa-user-md"></i> Profil anzeigen
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    
+                                    ${app.status === "Pending" ? `
+                                        <div class="applicant-actions" style="width: 100%;">
+                                            <button class="btn btn-success" onclick="respondToApplication('${app.id}', 'Accepted')" style="flex: 1; padding: 8px;">
+                                                <i class="fas fa-check"></i> Bewerbung annehmen
+                                            </button>
+                                            <button class="btn btn-danger" onclick="respondToApplication('${app.id}', 'Rejected')" style="flex: 1; padding: 8px;">
+                                                <i class="fas fa-times"></i> Ablehnen
+                                            </button>
+                                        </div>
+                                    ` : `
+                                        <div style="width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; color: var(--text-light); font-size: 13px;">
+                                            Entscheidung für diesen Bewerber wurde getroffen
+                                        </div>
+                                    `}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                container.appendChild(postCard);
+            }
+        }
+        
+        if (!hasApplications) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-light);"><i class="fas fa-users-slash fa-3x"></i><h3 style="margin-top: 20px;">Derzeit keine Bewerbungen für Ihre Schichten</h3></div>';
+        }
+        
+    } catch (error) {
+        console.error("Fehler beim Laden der Bewerbungen:", error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-triangle fa-3x"></i><h3 style="margin-top: 20px;">Fehler beim Laden der Bewerbungen</h3><p>' + error.message + '</p></div>';
+    }
+}
+
+// دالة لعرض الـ CV
+function viewCV(cvPath) {
+    // بناء الرابط الكامل بدون أي تحقق
+    const fullPath = `https://sirvicesezz.runasp.net/${cvPath}`;
+    
+    // فتح الرابط في نافذة جديدة
+    window.open(fullPath, '_blank');
+}    // Benachrichtigungen laden
+        async function loadNotifications() {
+            const container = document.getElementById('notifications-list');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Benachrichtigungen werden geladen...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/Notification/user/${pharmacyId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Benachrichtigungen konnten nicht geladen werden');
+                }
+                
+                const notifications = await response.json();
+                
+                container.innerHTML = '';
+                
+                if (notifications.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-light);"><i class="fas fa-bell-slash fa-3x"></i><h3 style="margin-top: 20px;">Derzeit keine Benachrichtigungen</h3></div>';
+                    return;
+                }
+                
+                const unreadCount = notifications.filter(n => !n.isRead).length;
+                const notifBadge = document.getElementById('notif-badge');
+                if (unreadCount > 0) {
+                    notifBadge.textContent = unreadCount;
+                    notifBadge.style.display = "inline-block";
+                } else {
+                    notifBadge.style.display = "none";
+                }
+                
+                notifications.forEach(notif => {
+                    const item = document.createElement('div');
+                    item.className = `notification-item ${notif.isRead ? '' : 'unread'}`;
+                    item.innerHTML = `
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">${notif.title}</div>
+                            <div class="notification-message">${notif.message}</div>
+                            <div class="notification-time">${new Date(notif.createdAt).toLocaleString('de-DE')}</div>
+                        </div>
+                        ${!notif.isRead ? `
+                            <button class="btn btn-outline" onclick="markAsRead(${notif.id}, this)" style="padding: 8px 15px; font-size: 14px; min-width: auto;">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                    `;
+                    container.appendChild(item);
+                });
+            } catch (error) {
+                console.error("Fehler beim Laden der Benachrichtigungen:", error);
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--danger);"><i class="fas fa-exclamation-triangle fa-3x"></i><h3 style="margin-top: 20px;">Fehler beim Laden der Benachrichtigungen</h3></div>';
+            }
+        }
+        // أضف هذه الدالة للتشخيص
+async function debugLoadApplicants(jobPostId) {
+    console.log(`🔍 Debug: Loading applicants for job post: ${jobPostId}`);
+    
+    try {
+        const response = await fetch(`${API_URL}/JobApplication/jobpost/${jobPostId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        console.log(`📊 Response status: ${response.status}`);
+        
+        if (!response.ok) {
+            console.error(`❌ Failed to load applicants: ${response.statusText}`);
+            return [];
+        }
+        
+        const data = await response.json();
+        console.log(`✅ Applicants data:`, data);
+        console.log(`📋 Number of applicants: ${data.length || 0}`);
+        
+        return data;
+    } catch (error) {
+        console.error("❌ Error loading applicants:", error);
+        return [];
+    }
+}
+async function loadDashboardData() {
+    try {
+        const response = await fetch(`${API_URL}/JobPost/pharmacy/${pharmacyId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Dashboard-Daten konnten nicht geladen werden');
+        }
+        
+        const shifts = await response.json();
+        
+        const container = document.getElementById('recent-shifts');
+        container.innerHTML = '';
+        
+        if (shifts.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-light);"><i class="fas fa-calendar-plus fa-3x"></i><h3 style="margin-top: 20px;">Keine veröffentlichten Schichten</h3><p>Erstellen Sie eine neue Schicht</p></div>';
+            return;
+        }
+        
+        // خذ فقط الشيفتات النشطة
+        const activeShifts = shifts.filter(shift => shift.status === "Active").slice(0, 3);
+        
+        // جلب عدد المتقدمين لكل شيفت
+        for (const shift of activeShifts) {
+            // استخدم دالة التشخيص أولاً لرؤية البيانات
+            const applicants = await debugLoadApplicants(shift.id);
+            const applicantsCount = applicants.length;
+            
+            const shiftDate = new Date(shift.shiftDate).toLocaleDateString('de-DE');
+            const salary = shift.salary || 0;
+            
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.style.marginBottom = '20px';
+            card.innerHTML = `
+                <div class="job-header">
+                    <div class="job-title">Schicht vom ${shiftDate}</div>
+                    <div class="job-date">${shift.startTime} - ${shift.endTime}</div>
+                </div>
+                <div class="job-details">
+                    <div class="detail-item">
+                        <i class="fas fa-euro-sign"></i>
+                        <span>Gehalt: ${salary}€</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-users"></i>
+                        <span>Anzahl Bewerber: ${applicantsCount}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Status: ${shift.status}</span>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="viewShiftApplications('${shift.id}')">
+                        <i class="fas fa-eye"></i> Bewerber anzeigen
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+        
+        if (activeShifts.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-light);"><i class="fas fa-calendar-times fa-3x"></i><h3 style="margin-top: 20px;">Keine aktiven Schichten</h3><p>Erstellen Sie eine neue Schicht</p></div>';
+        }
+        
+        if (shifts.length > 3) {
+            const moreBtn = document.createElement('div');
+            moreBtn.innerHTML = `
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-outline" onclick="showSection('my-shifts')">
+                        <i class="fas fa-arrow-left"></i> Alle Schichten anzeigen
+                    </button>
+                </div>
+            `;
+            container.appendChild(moreBtn);
+        }
+    } catch (error) {
+        console.error("Fehler beim Laden der Dashboard-Daten:", error);
+    }
+}
+        // Hilfsfunktionen
+        function clearAppBadge() {
+            const badge = document.getElementById('apps-badge');
+            badge.style.display = 'none';
+            badge.textContent = '0';
+        }
+
+        function viewShiftApplications(shiftId) {
+            showSection('applications');
+            clearAppBadge();
+        }
+
+        // Auf Bewerbung antworten
+        async function respondToApplication(applicationId, status) {
+            const action = status === "Accepted" ? "Annehmen" : "Ablehnen";
+            if (!confirm(`Möchten Sie diese Bewerbung wirklich ${action}?`)) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/JobApplication/respond`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        applicationId: applicationId,
+                        newStatus: status
+                    })
+                });
+                
+                if (response.ok) {
+                    alert(`Bewerbung erfolgreich ${action}`);
+                    loadApplications();
+                    loadStats();
+                    loadNotifications();
+                } else {
+                    const error = await response.text();
+                    alert(error || "Fehler beim Antworten auf die Bewerbung");
+                }
+            } catch (error) {
+                console.error("Fehler beim Antworten auf die Bewerbung:", error);
+                alert("Serververbindungsfehler");
+            }
+        }
+
+        // Apotheker-Profil anzeigen
+        async function viewPharmacistProfile(pharmacistId) {
+            try {
+                const response = await fetch(`${API_URL}/Pharmacist/${pharmacistId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    alert("Apotheker-Daten konnten nicht abgerufen werden");
+                    return;
+                }
+                
+                const user = await response.json();
+                
+                const modal = document.createElement('div');
+                modal.id = "profileModal";
+                modal.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px;";
+                
+                const baseUrl = API_URL.replace('/api', '');
+                const cvLink = user.cvPath ? `${baseUrl}/${user.cvPath}` : null;
+
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div style="background: var(--primary); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0;">Apotheker-Profil</h3>
+                            <i class="fas fa-times" onclick="this.closest('#profileModal').remove()" style="cursor: pointer; font-size: 20px;"></i>
+                        </div>
+                        <div style="padding: 25px;">
+                            <div style="display: flex; gap: 20px; margin-bottom: 25px; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; flex-wrap: wrap;">
+                                <div style="width: 80px; height: 80px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold;">
+                                    ${user.fullName.charAt(0)}
+                                </div>
+                                <div>
+                                    <h2 style="margin: 0; color: var(--primary);">${user.fullName}</h2>
+                                    <p style="margin: 5px 0; color: var(--text-light);"><i class="fas fa-map-marker-alt"></i> ${user.country} - ${user.address}</p>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <strong>Telefonnummer:</strong>
+                                    <p>${user.phone}</p>
+                                </div>
+                                <div>
+                                    <strong>Steuernummer:</strong>
+                                    <p>${user.taxNumber || 'Nicht verfügbar'}</p>
+                                </div>
+                                <div>
+                                    <strong>Transportmittel:</strong>
+                                    <p>${user.hasTransportation ? 'Ja (' + user.transportationType + ')' : 'Nein'}</p>
+                                </div>
+                                <div>
+                                    <strong>Führerschein:</strong>
+                                    <p>${user.hasDrivingLicense ? 'Ja' : 'Nein'}</p>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">
+                                <strong>Über mich:</strong>
+                                <p style="background: #f9f9f9; padding: 10px; border-radius: 8px; border-left: 3px solid var(--primary);">${user.bio || 'Keine Beschreibung'}</p>
+                            </div>
+
+                            <div style="background: var(--primary-light); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                                <div>
+                                    <i class="fas fa-file-pdf" style="font-size: 24px; color: var(--danger); margin-right: 10px;"></i>
+                                    <strong>Lebenslauf (CV)</strong>
+                                </div>
+                                ${cvLink ? 
+                                    `<a href="${cvLink}" target="_blank" class="btn btn-primary" style="padding: 8px 20px; text-decoration: none; white-space: nowrap;"> Datei anzeigen</a>` 
+                                    : '<span style="color: #888;">Keine Datei hochgeladen</span>'
+                                }
+                            </div>
+                        </div>
+                        <div style="padding: 15px; text-align: center; border-top: 1px solid #eee;">
+                            <button class="btn btn-outline" onclick="this.closest('#profileModal').remove()" style="width: 100%;">Schließen</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+
+            } catch (error) {
+                console.error("Fehler beim Abrufen des Apotheker-Profils:", error);
+                alert("Serververbindungsfehler");
+            }
+        }
+
+        // Schicht löschen
+        async function deleteShift(shiftId) {
+            if (!confirm("Möchten Sie diese Schicht wirklich löschen?")) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/JobPost/${shiftId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: "Cancelled" })
+                });
+                
+                if (response.ok) {
+                    alert("Schicht erfolgreich gelöscht");
+                    loadMyShifts();
+                    loadStats();
+                } else {
+                    alert("Fehler, möglicherweise wurde bereits ein Apotheker für diese Schicht angenommen");
+                }
+            } catch (error) {
+                console.error("Fehler beim Löschen der Schicht:", error);
+            }
+        }
+
+        // Benachrichtigung als gelesen markieren
+        async function markAsRead(notificationId, button) {
+            try {
+                const response = await fetch(`${API_URL}/Notification/mark-read/${notificationId}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    button.parentElement.classList.remove('unread');
+                    button.remove();
+                    loadNotifications();
+                }
+            } catch (error) {
+                console.error("Fehler beim Markieren als gelesen:", error);
+            }
+        }
+
+        // Alle Benachrichtigungen als gelesen markieren
+        async function markAllAsRead() {
+            if (!confirm("Möchten Sie alle Benachrichtigungen als gelesen markieren?")) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/Notification/user/${pharmacyId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const notifications = await response.json();
+                
+                for (const notif of notifications.filter(n => !n.isRead)) {
+                    await fetch(`${API_URL}/Notification/mark-read/${notif.id}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                }
+                
+                alert("Alle Benachrichtigungen wurden als gelesen markiert");
+                loadNotifications();
+            } catch (error) {
+                console.error("Fehler beim Markieren aller als gelesen:", error);
+            }
+        }
+
+        // Apothekendaten aktualisieren
+        document.getElementById('pharmacyProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird gespeichert...';
+            btn.disabled = true;
+            
+            try {
+                const data = {
+                    pharmacyName: document.getElementById('ph_name').value,
+                    phone: document.getElementById('ph_phone').value,
+                    address: document.getElementById('ph_address').value,
+                    country: document.getElementById('ph_country').value,
+                    licenseNumber: document.getElementById('ph_license').value
+                };
+                
+                const response = await fetch(`${API_URL}/Pharmacy/${pharmacyId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert("Apothekendaten erfolgreich aktualisiert!");
+                    loadPharmacyData();
+                } else {
+                    const error = await response.text();
+                    alert(error || "Fehler beim Speichern der Änderungen");
+                }
+            } catch (error) {
+                console.error("Fehler beim Aktualisieren der Apotheke:", error);
+                alert("Serververbindungsfehler");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Feldsteuerungsfunktionen
+        function toggleBreakField() {
+            const hasBreak = document.getElementById('hasBreak').checked;
+            document.getElementById('breakFields').style.display = hasBreak ? 'block' : 'none';
+        }
+
+        function toggleTransportationField() {
+            const hasTransportation = document.getElementById('hasTransportationAllowance').checked;
+            document.getElementById('transportationFields').style.display = hasTransportation ? 'block' : 'none';
+        }
+
+        // Abschnitte wechseln
+        function showSection(sectionId) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            
+            document.getElementById(`section-${sectionId}`).classList.add('active');
+            
+            const navItem = Array.from(document.querySelectorAll('.nav-item')).find(item => {
+                const text = item.querySelector('span')?.textContent;
+                if (!text) return false;
+                return (
+                    (sectionId === 'dashboard' && text === 'Dashboard') ||
+                    (sectionId === 'create-shift' && text === 'Neue Schicht erstellen') ||
+                    (sectionId === 'my-shifts' && text === 'Meine Schichten') ||
+                    (sectionId === 'applications' && text === 'Eingegangene Bewerbungen') ||
+                    (sectionId === 'notifications' && text === 'Benachrichtigungen') ||
+                    (sectionId === 'profile' && text === 'Apotheken-Daten')
+                );
+            });
+            if (navItem) navItem.classList.add('active');
+            
+            switch(sectionId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'my-shifts':
+                    loadMyShifts();
+                    break;
+                case 'applications':
+                    loadApplications();
+                    break;
+                case 'notifications':
+                    loadNotifications();
+                    break;
+                case 'profile':
+                    loadPharmacyData();
+                    break;
+            }
+        }
+
+        // Dashboard aktualisieren
+        function refreshDashboard() {
+            loadStats();
+            loadDashboardData();
+        }
+
+        // Abmelden
+        function logout() {
+            if (confirm("Möchten Sie sich abmelden?")) {
+                localStorage.clear();
+                window.location.href = "login.html";
+            }
+        }
+
+        // Ereignisse binden
+        document.getElementById('createShiftForm').onsubmit = handleCreateShift;
+
+        // Automatische Aktualisierung jede Minute
+        setInterval(() => {
+            loadStats();
+            loadNotifications();
+        }, 60000);
+
+        // Browser-Support-Erkennung
+        if (!('fetch' in window)) {
+            alert('Ihr Browser ist veraltet und unterstützt einige Funktionen nicht. Bitte aktualisieren Sie Ihren Browser.');
+        }
+        
+    </script>
+</body>
+</html>

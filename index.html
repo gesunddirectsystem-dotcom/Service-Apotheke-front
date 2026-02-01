@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServiceApotheke – Pharmazeutische Vertretung Digital & Professionell</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .shifts-public {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+
+        .shift-card-public {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .shift-card-public:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: #1a5fb4;
+        }
+
+        .shift-card-public .price-tag {
+            background: #26a269;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .shift-card-public h3 {
+            font-size: 1.2rem;
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        .shift-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .shift-info-item i {
+            color: #1a5fb4;
+            width: 20px;
+        }
+
+        .btn-apply-public {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #1a5fb4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-apply-public:hover {
+            background: #0d4a9c;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #1a5fb4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a5fb4;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #1a5fb4;
+        }
+
+        .nav-cta {
+            background-color: #1a5fb4;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-cta:hover {
+            background-color: #0d4a9c;
+            color: white;
+        }
+
+        /* User Icon Styles */
+        .user-icon-container {
+            display: none;
+        }
+
+        .user-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #1a5fb4;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 6px;
+            background-color: rgba(26, 95, 180, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-icon:hover {
+            background-color: rgba(26, 95, 180, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .user-icon i {
+            font-size: 24px;
+        }
+
+        .user-icon span {
+            font-size: 14px;
+        }
+
+        /* Hide sections when logged in */
+        body.user-logged-in .hero-buttons,
+        body.user-logged-in .cta-section,
+        body.user-logged-in nav a[href="#cta"],
+        body.user-logged-in .nav-cta:not(.user-icon) {
+            display: none !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 150px 0 80px;
+            background: linear-gradient(135deg, #e6f0ff 0%, #f5f9ff 100%);
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background-color: rgba(26, 95, 180, 0.1);
+            color: #1a5fb4;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 44px;
+            font-weight: 700;
+            color: #1a237e;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background-color: #1a5fb4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0d4a9c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(26, 95, 180, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: #26a269;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1e8b58;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(38, 162, 105, 0.2);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* تحسينات الصورة للتجاوب */
+        .hero-image-container {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            aspect-ratio: 5/4; /* نسبة 5:4 للصورة */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(26, 95, 180, 0.15);
+            position: relative;
+        }
+
+        .hero-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        /* صورة بديلة في حالة الخطأ */
+        .hero-image-container .fallback-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a5fb4 0%, #26a269 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .fallback-image i {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .fallback-image h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .fallback-image p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 60px 0;
+        }
+
+        /* Why Section */
+        .why-section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 50px;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(26, 95, 180, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #1a5fb4;
+            font-size: 24px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        .feature-text {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Choose Role Section */
+        .role-section {
+            padding: 80px 0;
+            background-color: #f5f9ff;
+        }
+
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .role-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .role-card:hover {
+            border-color: #1a5fb4;
+            transform: translateY(-5px);
+        }
+
+        .role-icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(26, 95, 180, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: #1a5fb4;
+            font-size: 28px;
+        }
+
+        .role-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        .role-description {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #1a5fb4 0%, #26a269 100%);
+            border-radius: 16px;
+            padding: 60px 40px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(26, 95, 180, 0.2);
+        }
+
+        .cta-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-text {
+            font-size: 18px;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background-color: white;
+            color: #1a5fb4;
+            padding: 18px 40px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        /* تعديل زر عرض كافة الشيفتات */
+        .shifts-public .center-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        .shifts-public .btn-outline {
+            display: inline-block;
+            margin: 0 auto;
+            padding: 12px 30px;
+            border: 2px solid #1a5fb4;
+            color: #1a5fb4;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .shifts-public .btn-outline:hover {
+            background: #1a5fb4;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 95, 180, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a237e;
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-about {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .footer-logo .logo-icon {
+            background-color: white;
+            color: #1a5fb4;
+        }
+
+        .footer-logo .logo-text {
+            color: white;
+        }
+
+        .footer-about-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            max-width: 400px;
+        }
+
+        .footer-contact {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .contact-item i {
+            width: 20px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Responsive Design - تحسينات للتجاوب */
+        @media (max-width: 1200px) {
+            .hero-content {
+                gap: 40px;
+            }
+            
+            .hero-image-container {
+                max-width: 450px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                margin: 0 auto 30px;
+            }
+
+            .hero-image-container {
+                max-width: 500px;
+                width: 100%;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .cta-title {
+                font-size: 30px;
+            }
+            
+            .user-icon span {
+                display: none;
+            }
+            
+            .hero-image-container {
+                max-width: 100%;
+                aspect-ratio: 4/3; /* تغيير النسبة للشاشات الصغيرة */
+            }
+            
+            .hero {
+                padding: 120px 0 60px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                padding: 100px 0 40px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .cta-box {
+                padding: 40px 20px;
+            }
+
+            .cta-title {
+                font-size: 26px;
+            }
+            
+            .hero-image-container {
+                aspect-ratio: 3/2; /* نسبة أفضل للهواتف */
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .shift-card-public {
+                padding: 20px;
+            }
+            
+            .shifts-public {
+                padding: 60px 0;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .hero-title {
+                font-size: 24px;
+            }
+            
+            .hero-buttons .btn {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .hero-image-container {
+                aspect-ratio: 1/0.8;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <div class="logo-text">ServiceApotheke</div>
+                </div>
+
+              
+
+
+                <nav>
+                    <ul>
+                        <li><a href="#home">Startseite</a></li>
+                        <li><a href="#why">Warum ServiceApotheke?</a></li>
+                        <li><a href="#roles">Rollen</a></li>
+                        <li><a href="#cta" class="register-link">Registrieren</a></li>
+<li><a href="login.html" class="nav-cta login-link">Anmelden</a></li>                    </ul>
+                </nav>
+                
+                <!-- User Icon Container (Hidden by default) -->
+                <div id="userIcon" class="user-icon-container">
+                    <a href="#" id="userProfileLink" class="user-icon">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">Pharmazeutische Vertretung</div>
+                    <h1 class="hero-title">Digital & Professionell</h1>
+                    <p class="hero-subtitle">
+                        Die moderne Plattform, die Apotheke mit qualifizierten Apotheken und PTA verbindet: Einfach,
+                        schnell und zuverlässig – für optimale pharmazeutische Versorgung.
+                    </p>
+
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" id="pharmacyBtn">
+                            <i class="fas fa-clinic-medical"></i> Ich bin Apotheke
+                        </button>
+                        <button class="btn btn-secondary" id="pharmacistBtn">
+                            <i class="fas fa-user-md"></i> Ich bin Apotheker
+                        </button>
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <div class="hero-image-container">
+                        <!-- يمكنك تغيير رابط الصورة هنا -->
+                        <img src="assets/hero.jpg" 
+                             alt="Pharmacy Platform - ServiceApotheke"
+                             onerror="showFallbackImage(this)">
+                        <!-- صورة بديلة ستظهر عند فشل تحميل الصورة -->
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<section class="shifts-public" id="available-shifts">
+    <div class="container">
+        <h2 class="section-title">Aktuell verfügbare Schichten</h2>
+        <p class="section-subtitle">Durchsuchen Sie die aktuell verfügbaren Schichten und bewerben Sie sich noch heute.</p>
+        
+        <div class="features-grid" id="public-shifts-container">
+            <!-- جاري التحميل من الداتابيز... -->
+            <div style="text-align: center; grid-column: 1/-1;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #1a5fb4;"></i>
+                <p>Lade verfügbare Schichten...</p>
+            </div>
+        </div>
+        
+        <div class="center-button">
+            <button class="btn-outline" onclick="viewAllShifts()">
+                Alle Schichten anzeigen
+            </button>
+        </div>
+    </div>
+</section>
+
+    <div class="container">
+        <div class="divider"></div>
+    </div>
+
+    <!-- Why Section -->
+    <section class="why-section" id="why">
+        <div class="container">
+            <h2 class="section-title">Warum ServiceApotheke?</h2>
+            <p class="section-subtitle">
+                Unsere Plattform unterstützt die Verwaltung von pharmazeutischen Versorgungsaufgaben und bietet eine
+                einfache Zugang.
+            </p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Zielgruppe</h3>
+                    <p class="feature-text">Patienten, die sich auf apotheken vertreten haben.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="feature-title">Geprüfte Profile</h3>
+                    <p class="feature-text">Alle Apotheken und PTA sind qualifiziert und verfügbar.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">Direkter Kontakt</h3>
+                    <p class="feature-text">Kennzahlen, Berichte und patientenbezogene Daten.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Transportierte Prüfe</h3>
+                    <p class="feature-text">Klienten können mit ihren Prüfern prüfen.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Choose Role Section -->
+    <section class="role-section" id="roles">
+        <div class="container">
+            <h2 class="section-title">Wählen Sie Ihre Rolle</h2>
+            <p class="section-subtitle">
+                Bevor Sie mehr Apotheken und Ärzte nutzen, wählen Sie "Versorgung" aus der Auswahl.
+            </p>
+
+            <div class="role-cards">
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-clinic-medical"></i>
+                    </div>
+                    <h3 class="role-title">Apotheke</h3>
+                    <p class="role-description">Für Apothekenvertretern.</p>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3 class="role-title">Apotheker / PTA</h3>
+                    <p class="role-description">Für pharmazeutische Personen.</p>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-concierge-bell"></i>
+                    </div>
+                    <h3 class="role-title">ServiceApotheke</h3>
+                    <p class="role-description">Für Apothekenvertretern.</p>
+                </div>
+
+                <div class="role-card">
+                    <div class="role-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h3 class="role-title">Transportierte Prüfe</h3>
+                    <p class="role-description">Für Ärzte.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-box">
+                <h2 class="cta-title">Bereit loszulegen?</h2>
+                <p class="cta-text">
+                    Registrieren Sie sich jetzt kostenlos und erhalten Sie ein vereinbartes Telefonbuch mit Apotheken
+                    und pharmazeutischen Personen.
+                </p>
+                <button class="cta-button" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Jetzt registrieren
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="logo-text">ServiceApotheke</div>
+                    </div>
+                    <p class="footer-about-text">
+                        Wir dienen Patienten, die apotheken vertreten haben. Unsere Plattform ermöglicht Apotheken und
+                        Ärzte, ihre Patienten zu versorgen.
+                    </p>
+                </div>
+
+                <div class="footer-contact">
+                    <h3 class="footer-title">Kontakt</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@serviceapotheke.de</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+49 (0) 171 456 198</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Berlin, Deutschland</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                &copy; 2023 ServiceApotheke. Alle Rechte vorbehalten.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = "https://sirvicesezz.runasp.net/api";
+
+        // دالة لعرض الصورة البديلة عند فشل تحميل الصورة
+        function showFallbackImage(imgElement) {
+            const container = imgElement.parentElement;
+            imgElement.style.display = 'none';
+            const fallback = container.querySelector('.fallback-image');
+            if (fallback) {
+                fallback.style.display = 'flex';
+            }
+        }
+
+        // 1. إصلاح مشكلة زر الـ User Profile Link
+        function setupUserIconNavigation() {
+            const userProfileLink = document.getElementById('userProfileLink');
+            if (userProfileLink) {
+                userProfileLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const userType = localStorage.getItem('userType');
+                    const userToken = localStorage.getItem('userToken');
+                    
+                    if (userToken && userType) {
+                        if (userType === 'pharmacist') {
+                            window.location.href = 'pharmacist-dashboard.html';
+                        } else if (userType === 'pharmacy') {
+                            window.location.href = 'pharmacy-dashboard.html';
+                        }
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+        }
+
+        // 2. التحقق من حالة تسجيل الدخول
+        function checkLoginStatus() {
+            const userToken = localStorage.getItem('userToken');
+            const userType = localStorage.getItem('userType');
+            const userName = localStorage.getItem('userName');
+            
+            const userIcon = document.getElementById('userIcon');
+            const userNameSpan = document.getElementById('userName');
+            const loginLink = document.querySelector('.login-link');
+            const registerLink = document.querySelector('.register-link');
+            
+            if (userToken && userType) {
+                if (userIcon) userIcon.style.display = 'flex';
+                if (loginLink) loginLink.style.display = 'none';
+                if (registerLink) registerLink.style.display = 'none';
+                document.body.classList.add('user-logged-in');
+                
+             // في دالة checkLoginStatus
+if (userNameSpan && userName) {
+    userNameSpan.textContent = userName;
+} else if (userNameSpan) {
+    userNameSpan.textContent = userType === 'pharmacist' ? 'Apotheker' : 'Apotheke';
+}
+                
+                // إعادة تحميل الشيفتات لعرض العناوين
+                fetchPublicShifts();
+                
+            } else {
+                if (userIcon) userIcon.style.display = 'none';
+                if (loginLink) loginLink.style.display = 'block';
+                if (registerLink) registerLink.style.display = 'block';
+                document.body.classList.remove('user-logged-in');
+                fetchPublicShifts();
+            }
+        }
+
+        // 3. Registration Buttons
+        document.getElementById('pharmacyBtn')?.addEventListener('click', function () {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                window.location.href = 'register.html?role=pharmacy';
+            } else {
+                const userType = localStorage.getItem('userType');
+                if (userType === 'pharmacy') {
+                    window.location.href = 'pharmacy-dashboard.html';
+                } else {
+                    alert('أنت مسجل كصيدلي، لا يمكنك الوصول لوحة الصيدلية');
+                }
+            }
+        });
+
+        document.getElementById('pharmacistBtn')?.addEventListener('click', function () {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                window.location.href = 'register.html?role=pharmacist';
+            } else {
+                const userType = localStorage.getItem('userType');
+                if (userType === 'pharmacist') {
+                    window.location.href = 'pharmacist-dashboard.html';
+                } else {
+                    alert('أنت مسجل كصيدلية، لا يمكنك الوصول لوحة الصيدلي');
+                }
+            }
+        });
+
+        document.getElementById('registerBtn')?.addEventListener('click', function () {
+            window.location.href = 'register.html';
+        });
+
+        // 4. زر "عرض كافة الشيفتات"
+        function viewAllShifts() {
+            const token = localStorage.getItem('userToken');
+            if (token) {
+                const role = localStorage.getItem('userType');
+                if (role === 'pharmacist') {
+                    window.location.href = 'pharmacist-dashboard.html#shifts';
+                } else if (role === 'pharmacy') {
+                    window.location.href = 'pharmacy-dashboard.html';
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 5. Smooth Scrolling for Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 768) {
+                        const nav = document.querySelector('nav ul');
+                        if (nav) nav.style.display = 'none';
+                    }
+                }
+            });
+        });
+// 5. دالة جلب الشيفتات وعرضها للجمهور
+async function fetchPublicShifts() {
+    const container = document.getElementById('public-shifts-container');
+    if (!container) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/JobPost/active`);
+        const shifts = await response.json();
+        
+        container.innerHTML = '';
+        
+        if (shifts.length === 0) {
+            container.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Derzeit sind keine Schichten verfügbar.</p>';
+            return;
+        }
+
+        shifts.slice(0, 6).forEach(shift => {
+            const shiftDate = new Date(shift.shiftDate).toLocaleDateString('de-DE');
+            const salary = shift.salary || 0;
+            
+            const userToken = localStorage.getItem('userToken');
+            const userType = localStorage.getItem('userType');
+            
+            let addressText;
+            if (userToken && userType) {
+                addressText = shift.pharmacy?.address || 'Adresse nicht angegeben';
+            } else {
+                addressText = 'Adresse nach Anmeldung verfügbar';
+            }
+            
+            const card = `
+                <div class="shift-card-public">
+                    <div class="price-tag">${salary}€</div>
+                    <h3>${shift.pharmacy?.pharmacyName || 'Zugelassene Apotheke'}</h3>
+                    <div class="shift-info-item">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>${shiftDate}</span>
+                    </div>
+                    <div class="shift-info-item">
+                        <i class="far fa-clock"></i>
+                        <span>${shift.startTime} - ${shift.endTime}</span>
+                    </div>
+                    <div class="shift-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${addressText}</span>
+                    </div>
+                    <button class="btn-apply-public" onclick="handleApplyClick('${shift.id}')">
+                        <i class="fas fa-paper-plane"></i> Jetzt bewerben
+                    </button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', card);
+        });
+    } catch (error) {
+        console.error("Error fetching shifts:", error);
+        container.innerHTML = '<p style="color:red; text-align:center; grid-column:1/-1;">Entschuldigung, ein Fehler ist beim Laden der Daten aufgetreten.</p>';
+    }
+}
+
+// 6. دالة التعامل مع الضغط على تقديم
+async function handleApplyClick(jobPostId) {
+    const token = localStorage.getItem('userToken');
+    const userType = localStorage.getItem('userType');
+    const userId = localStorage.getItem('userId');
+
+    if (!token) {
+        alert("Sie müssen sich zuerst anmelden, um sich auf diese Schicht zu bewerben!");
+        window.location.href = 'login.html';
+        return;
+    }
+
+    if (userType !== 'pharmacist') {
+        alert("Diese Funktion ist nur für Apotheker verfügbar.");
+        return;
+    }
+
+    if (!confirm("Sind Sie sicher, dass Sie sich für diese Schicht bewerben möchten?")) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/JobApplication/apply`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                pharmacistId: userId,
+                jobPostId: jobPostId
+            })
+        });
+        
+        if (response.ok) {
+            alert("Ihre Bewerbung wurde erfolgreich eingereicht!");
+            fetchPublicShifts();
+        } else {
+            const errorText = await response.text();
+            if (errorText.includes("already applied")) {
+                alert("Sie haben sich bereits für diese Schicht beworben!");
+            } else {
+                alert(errorText || "Fehler bei der Bewerbung");
+            }
+        }
+    } catch (error) {
+        console.error("Error applying:", error);
+        alert("Serververbindungsfehler");
+    }
+}
+
+// 7. تسجيل الخروج
+function logout() {
+    if (confirm('Möchten Sie sich abmelden?')) {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('userType');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        window.location.href = 'index.html';
+    }
+}
+        // 7. دالة التعامل مع الضغط على تقديم
+        async function handleApplyClick(jobPostId) {
+            const token = localStorage.getItem('userToken');
+            const userType = localStorage.getItem('userType');
+            const userId = localStorage.getItem('userId');
+
+           if (!token) {
+    alert("Sie müssen sich zuerst anmelden, um sich auf diese Schicht zu bewerben!");
+    window.location.href = 'login.html';
+    return;
+}
+
+if (userType !== 'pharmacist') {
+    alert("Diese Funktion ist nur für Apotheker verfügbar.");
+    return;
+}
+
+if (!confirm("Sind Sie sicher, dass Sie sich für diese Schicht bewerben möchten?")) return;
+            try {
+                const response = await fetch(`${API_URL}/JobApplication/apply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        pharmacistId: userId,
+                        jobPostId: jobPostId
+                    })
+                });
+                
+                if (response.ok) {
+                    alert("تم تقديم طلبك بنجاح!");
+                    fetchPublicShifts();
+                } else {
+                    const errorText = await response.text();
+                    if (errorText.includes("already applied")) {
+                        alert("لقد تقدمت بالفعل على هذا الشيفت!");
+                    } else {
+                        alert(errorText || "حدث خطأ في التقديم");
+                    }
+                }
+            } catch (error) {
+                console.error("Error applying:", error);
+                alert("حدث خطأ في الاتصال بالسيرفر");
+            }
+        }
+
+        // 8. تسجيل الخروج
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userType');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // 9. Initialize mobile menu on resize
+        window.addEventListener('resize', function () {
+            const nav = document.querySelector('nav ul');
+            if (window.innerWidth > 768 && nav) {
+                nav.style.display = 'flex';
+            } else if (window.innerWidth <= 768 && nav) {
+                nav.style.display = 'none';
+            }
+        });
+
+        // 10. تشغيل الدوال عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', function() {
+            setupUserIconNavigation();
+            checkLoginStatus();
+            fetchPublicShifts();
+            
+            setInterval(checkLoginStatus, 30000);
+            
+            // تحقق من أن القائمة تظهر في الشاشات الكبيرة
+            if (window.innerWidth > 768) {
+                const nav = document.querySelector('nav ul');
+                if (nav) nav.style.display = 'flex';
+            }
+            
+
+        });
+
+        // 11. Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .role-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
